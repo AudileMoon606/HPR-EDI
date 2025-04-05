@@ -7,7 +7,7 @@
   <!-- Inclusion de la police Roboto -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   <style>
-    /* Réinitialisation */
+    /* Réinitialisation globale */
     * {
       margin: 0;
       padding: 0;
@@ -19,101 +19,122 @@
       color: #333;
       line-height: 1.6;
       transition: background-color 0.3s, color 0.3s;
-      padding-left: 250px; /* espace pour la nav latérale sur desktop */
     }
-    /* Mode sombre (peut être activé via un bouton) */
+    a { text-decoration: none; color: inherit; }
+    
+    /* Mode sombre */
     body.dark-mode {
       background-color: #121212;
       color: #e0e0e0;
     }
-    /* Navigation latérale */
+    body.dark-mode header {
+      background-color: #1f1f1f;
+      color: #FFC72C;
+    }
+    body.dark-mode #side-menu {
+      background-color: #1f1f1f;
+    }
+    body.dark-mode #side-menu ul li {
+      border-bottom: 1px solid #444;
+    }
+    body.dark-mode .game-container {
+      background: #1f1f1f;
+    }
+    body.dark-mode .game-feedback,
+    body.dark-mode .next-button {
+      background-color: #FFC72C;
+      color: #1f1f1f;
+    }
+    
+    /* Header fixe avec bouton menu et toggle dark mode */
+    header {
+      background-color: #002855;
+      color: #FFC72C;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+    }
+    .site-title {
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .header-buttons {
+      display: flex;
+      align-items: center;
+    }
+    .hamburger, .dark-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    /* Menu latéral coulissant */
     #side-menu {
       position: fixed;
       top: 0;
       left: 0;
-      width: 250px;
       height: 100%;
+      width: 250px;
       background-color: #002855;
+      padding-top: 60px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+    #side-menu.active {
+      transform: translateX(0);
+    }
+    #side-menu ul {
+      list-style: none;
+    }
+    #side-menu ul li {
+      padding: 15px 20px;
+      border-bottom: 1px solid #004080;
+    }
+    #side-menu ul li a {
       color: #FFC72C;
-      padding-top: 20px;
-      transition: transform 0.3s ease-in-out;
-      z-index: 1500;
-    }
-    #side-menu.closed {
-      transform: translateX(-250px);
-    }
-    #side-menu nav {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #side-menu nav a {
-      text-decoration: none;
-      color: #FFC72C;
-      font-weight: 500;
-      margin: 15px 0;
       font-size: 16px;
       display: flex;
       align-items: center;
     }
-    #side-menu nav a img {
+    #side-menu ul li a img {
       width: 24px;
       height: 24px;
       margin-right: 10px;
     }
-    /* Bouton hamburger */
-    .hamburger {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 2000;
-      background: none;
-      border: none;
-      cursor: pointer;
-      outline: none;
-    }
-    .hamburger div {
-      width: 30px;
-      height: 4px;
-      background-color: #FFC72C;
-      margin: 6px 0;
-      transition: 0.4s;
-    }
-    /* Bouton dark mode */
-    .dark-mode-toggle {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background-color: #002855;
-      color: #FFC72C;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      z-index: 2000;
-    }
-    /* Contenu principal */
-    main {
+    
+    /* Conteneur principal */
+    .content {
+      margin-top: 60px;
       padding: 20px;
-      max-width: 1000px;
-      margin: 80px auto 40px auto;
     }
     section {
+      display: none;
+      max-width: 1000px;
+      margin: 0 auto;
       padding: 40px 20px;
       border-bottom: 1px solid #ddd;
     }
-    section:last-of-type {
-      border-bottom: none;
+    section.active {
+      display: block;
     }
     h1, h2 {
       color: #002855;
       margin-bottom: 20px;
     }
-    /* Adaptation du header dans le mode sombre */
-    h1, h2, p, li {
-      transition: color 0.3s;
+    ul {
+      margin-left: 20px;
+      margin-bottom: 20px;
     }
-    /* Style spécifique pour le jeu interactif */
+    
+    /* Styles spécifiques au jeu interactif */
     .game-container {
       background: #f9f9f9;
       padding: 20px;
@@ -153,126 +174,118 @@
       border-radius: 4px;
       font-size: 16px;
     }
-    /* Responsive pour mobiles */
-    @media (max-width: 768px) {
-      body {
-        padding-left: 0;
+    
+    /* Responsive mobile */
+    @media (max-width: 600px) {
+      header {
+        padding: 10px;
       }
       #side-menu {
         width: 200px;
       }
-      #side-menu.closed {
-        transform: translateX(-200px);
+      #side-menu ul li {
+        padding: 10px 15px;
       }
-    }
-    /* Préférence de couleur du système */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #121212;
-        color: #e0e0e0;
-      }
-      #side-menu {
-        background-color: #000;
+      .game-options button {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Bouton hamburger pour ouvrir/fermer le menu -->
-  <button class="hamburger" id="hamburger">
-    <div></div>
-    <div></div>
-    <div></div>
-  </button>
-  <!-- Bouton pour activer le mode sombre -->
-  <button class="dark-mode-toggle" id="darkModeToggle">Mode Sombre</button>
-
+  <!-- Header avec bouton menu et toggle dark mode -->
+  <header>
+    <div class="header-buttons">
+      <button class="hamburger" id="hamburger-btn">
+        <img src="https://img.icons8.com/fluency-systems-filled/24/FFC72C/menu.png" alt="Menu Icon">
+      </button>
+      <span class="site-title">EDI Dodo Déterminés</span>
+    </div>
+    <button class="dark-toggle" id="dark-toggle-btn">
+      <img src="https://img.icons8.com/fluency-systems-filled/24/FFC72C/moon-symbol.png" alt="Dark Mode Toggle">
+    </button>
+  </header>
+  
   <!-- Menu latéral -->
-  <aside id="side-menu" class="closed">
-    <nav>
-      <a href="#accueil">
-        <img src="https://img.icons8.com/fluency/48/FFC72C/home.png" alt="Accueil Icon">
-        Accueil
-      </a>
-      <a href="#concepts">
-        <img src="https://img.icons8.com/fluency/48/FFC72C/book.png" alt="Concepts Icon">
-        Concepts EDI [1]
-      </a>
-      <a href="#pratiques">
-        <img src="https://img.icons8.com/fluency/48/FFC72C/settings.png" alt="Bonnes Pratiques Icon">
-        Bonnes Pratiques [2]
-      </a>
-      <a href="#defis">
-        <!-- Correction de l'URL de l'icône si besoin -->
-        <img src="https://img.icons8.com/fluency/48/FFC72C/idea.png" alt="Défis Icon">
-        Défis [3]
-      </a>
-      <a href="#jeu">
-        <img src="https://img.icons8.com/fluency/48/FFC72C/controller.png" alt="Jeu Icon">
-        Jeu Interactif [4]
-      </a>
-      <a href="#references">
-        <img src="https://img.icons8.com/fluency/48/FFC72C/books.png" alt="Références Icon">
-        Références [5]
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Contenu principal multi-pages (sections) -->
-  <main>
-    <!-- Page Accueil -->
-    <section id="accueil">
+  <nav id="side-menu">
+    <ul>
+      <li><a href="#accueil" class="menu-link" data-target="accueil">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/home.png" alt="Accueil Icon">Accueil</a>
+      </li>
+      <li><a href="#concepts" class="menu-link" data-target="concepts">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/book.png" alt="Concepts Icon">Concepts EDI</a>
+      </li>
+      <li><a href="#pratiques" class="menu-link" data-target="pratiques">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/settings.png" alt="Bonnes Pratiques Icon">Bonnes Pratiques</a>
+      </li>
+      <li><a href="#defis" class="menu-link" data-target="defis">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/trophy.png" alt="Défis Icon">Défis</a>
+      </li>
+      <li><a href="#jeu" class="menu-link" data-target="jeu">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/controller.png" alt="Jeu Icon">Jeu Interactif</a>
+      </li>
+      <li><a href="#references" class="menu-link" data-target="references">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/books.png" alt="Références Icon">Références</a>
+      </li>
+      <li><a href="#actualites" class="menu-link" data-target="actualites">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/news.png" alt="Actualités Icon">Actualités</a>
+      </li>
+      <li><a href="#apropos" class="menu-link" data-target="apropos">
+        <img src="https://img.icons8.com/fluency/48/FFC72C/info.png" alt="À propos Icon">À propos</a>
+      </li>
+    </ul>
+  </nav>
+  
+  <!-- Contenu principal -->
+  <div class="content">
+    <!-- Section Accueil -->
+    <section id="accueil" class="active">
       <h1>Bienvenue sur EDI Dodo Déterminés</h1>
       <p>
-        Ce site éducatif est conçu pour sensibiliser aux enjeux de l’Équité, la Diversité et l’Inclusion (EDI) dans la gestion de projet [1]. 
-        Vous découvrirez des concepts clés, des pratiques concrètes et participerez à un jeu interactif pour mettre en pratique vos connaissances [4].
+        Ce site éducatif est conçu pour sensibiliser aux enjeux de l’Équité, la Diversité et l’Inclusion (EDI) dans la gestion de projet.  
+        Découvrez des concepts clés [1], des pratiques éprouvées [2] et des actualités récentes pour vous tenir informé.
       </p>
       <p>
-        Nous avons rassemblé plusieurs ressources et études pour approfondir ces sujets essentiels [1][2]. 
-        Naviguez dans le menu pour explorer chaque section.
+        Profitez d’un contenu riche et interactif pour transformer vos méthodes de gestion et intégrer pleinement les valeurs d’EDI.
       </p>
     </section>
     
-    <!-- Page Concepts EDI -->
+    <!-- Section Concepts EDI -->
     <section id="concepts">
       <h2>Concepts EDI</h2>
       <p>
-        L’Équité, la Diversité et l’Inclusion représentent des piliers essentiels dans la gestion de projet moderne [1]. 
-        L’équité consiste à offrir des opportunités égales en tenant compte des besoins spécifiques [1]. 
-        La diversité valorise les différences culturelles, professionnelles et personnelles [2].
+        L’Équité, la Diversité et l’Inclusion sont des piliers essentiels pour toute organisation moderne.  
+        L’équité consiste à offrir des opportunités adaptées aux besoins spécifiques de chacun [1].  
+        La diversité valorise les différences culturelles, professionnelles et personnelles [1].  
+        Enfin, l’inclusion vise à créer un environnement où chacun se sent accepté et valorisé [1].
       </p>
-      <ul>
-        <li><strong>Équité :</strong> Adapter les opportunités en fonction des besoins individuels [1].</li>
-        <li><strong>Diversité :</strong> Favoriser une pluralité de perspectives et d’expériences [2].</li>
-        <li><strong>Inclusion :</strong> Créer un environnement où chacun se sent accepté et valorisé [2].</li>
-      </ul>
       <p>
-        Ces principes sont étayés par plusieurs études et témoignages d’experts [1][2].
+        Ces principes, lorsqu'ils sont bien appliqués, améliorent la cohésion des équipes et optimisent la performance globale.
       </p>
     </section>
     
-    <!-- Page Bonnes Pratiques -->
+    <!-- Section Bonnes Pratiques -->
     <section id="pratiques">
       <h2>Bonnes Pratiques</h2>
       <p>
-        Voici quelques recommandations pour intégrer l’EDI dans vos projets de manière concrète et efficace [2]:
+        Voici quelques recommandations pour intégrer l’EDI dans vos projets :
       </p>
       <ul>
         <li>Analyser les besoins spécifiques de chaque membre de l’équipe [2].</li>
-        <li>Organiser des formations sur la sensibilisation aux biais inconscients [2].</li>
+        <li>Mettre en place des formations sur la sensibilisation aux biais inconscients [2].</li>
         <li>Adopter une communication transparente et inclusive [2].</li>
         <li>Valoriser les retours d’expérience pour améliorer continuellement les pratiques [2].</li>
       </ul>
       <p>
-        Ces pratiques sont issues d’études récentes et d’expériences terrain [2][5].
+        L’application rigoureuse de ces pratiques favorise un environnement de travail harmonieux et performant.
       </p>
     </section>
     
-    <!-- Page Défis -->
+    <!-- Section Défis -->
     <section id="defis">
       <h2>Défis</h2>
       <p>
-        Malgré de nombreux bénéfices, l’intégration de l’EDI peut rencontrer plusieurs obstacles [3]:
+        L’intégration de l’EDI peut rencontrer divers obstacles :
       </p>
       <ul>
         <li>Résistance au changement au sein de l’équipe [3].</li>
@@ -281,11 +294,11 @@
         <li>Contraintes budgétaires limitant l’implémentation de certaines initiatives [3].</li>
       </ul>
       <p>
-        Une stratégie adaptée et une communication efficace sont essentielles pour surmonter ces défis [3][5].
+        Chaque défi peut être surmonté grâce à des stratégies adaptées et une communication efficace.
       </p>
     </section>
     
-    <!-- Page Jeu Interactif -->
+    <!-- Section Jeu Interactif -->
     <section id="jeu">
       <h2>Jeu Interactif : Chef de Projet Inclusif</h2>
       <div class="game-container">
@@ -293,16 +306,13 @@
           <!-- Le contenu du jeu sera injecté ici par JavaScript -->
         </div>
       </div>
-      <p>
-        Testez vos compétences en gestion de projet inclusif à travers ce jeu interactif. Les scénarios proposés sont inspirés par des situations réelles [4].
-      </p>
     </section>
     
-    <!-- Page Références -->
+    <!-- Section Références -->
     <section id="references">
       <h2>Références</h2>
       <p>
-        Voici quelques références bibliographiques (format IEEE) utilisées dans ce site :
+        Voici quelques références bibliographiques (format IEEE) :
       </p>
       <ol>
         <li>[1] J. Dupont, <em>Intégration de l’EDI en gestion de projet</em>, Paris, France, 2020.</li>
@@ -312,34 +322,85 @@
         <li>[5] S. Tremblay, <em>Perspectives sur l’équité et l’inclusion</em>, Genève, Suisse, 2022.</li>
       </ol>
     </section>
-  </main>
-
-  <!-- Script pour le jeu interactif et les fonctionnalités du menu et du mode sombre -->
+    
+    <!-- Section Actualités -->
+    <section id="actualites">
+      <h2>Actualités</h2>
+      <p>
+        Restez informé des dernières tendances et innovations en matière d’EDI.  
+        Découvrez des études de cas, interviews d’experts et articles de fond qui analysent l’impact des initiatives EDI dans différents secteurs [4].
+      </p>
+      <p>
+        Nos actualités sont mises à jour régulièrement pour refléter les évolutions du terrain.
+      </p>
+    </section>
+    
+    <!-- Section À propos -->
+    <section id="apropos">
+      <h2>À propos</h2>
+      <p>
+        EDI Dodo Déterminés est un projet éducatif dédié à la promotion des valeurs d’Équité, Diversité et Inclusion.  
+        Notre mission est de fournir des ressources de qualité pour aider les organisations à intégrer ces principes dans leurs pratiques quotidiennes [5].
+      </p>
+      <p>
+        Pour toute question ou suggestion, n'hésitez pas à nous contacter.
+      </p>
+    </section>
+  </div>
+  
+  <!-- Script JavaScript -->
   <script>
+    // Gestion de la navigation en mode "pages"
+    const menuLinks = document.querySelectorAll('.menu-link');
+    const sections = document.querySelectorAll('section');
+    const sideMenu = document.getElementById('side-menu');
+    
+    menuLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('data-target');
+        sections.forEach(section => section.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+        sideMenu.classList.remove('active');
+      });
+    });
+    
+    // Toggle du menu hamburger
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    hamburgerBtn.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+    });
+    
+    // Toggle du mode sombre
+    const darkToggleBtn = document.getElementById('dark-toggle-btn');
+    darkToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+    
     // Jeu interactif "Chef de Projet Inclusif"
     const scenarios = [
       {
         question: "Votre équipe se compose de membres très diversifiés. Comment répartissez-vous les tâches ?",
         options: [
           { text: "Attribuer les tâches en fonction de l'expertise de chacun.", feedback: "Bonne décision ! Cela valorise les compétences individuelles et optimise la performance collective." },
-          { text: "Attribuer les tâches de manière égale sans tenir compte des compétences spécifiques.", feedback: "Cette approche paraît équitable, mais risque de ne pas exploiter pleinement le potentiel de chacun." },
-          { text: "Laisser les membres choisir eux-mêmes leurs tâches.", feedback: "L'autonomie est importante, mais sans orientation, certains pourraient se retrouver inadaptés à leur rôle." }
+          { text: "Attribuer les tâches de manière égale sans tenir compte des compétences spécifiques.", feedback: "Cette approche semble équitable, mais risque de ne pas exploiter pleinement le potentiel de chacun." },
+          { text: "Laisser les membres choisir eux-mêmes leurs tâches.", feedback: "L'autonomie est importante, mais sans orientation, certains pourraient se retrouver surchargés ou inadaptés à leur rôle." }
         ]
       },
       {
-        question: "Un conflit survient en raison de malentendus culturels. Quelle est votre réaction ?",
+        question: "Un conflit surgit en raison de malentendus culturels. Quelle est votre réaction ?",
         options: [
           { text: "Organiser une médiation pour comprendre les différents points de vue.", feedback: "Excellente approche ! La médiation aide à clarifier les malentendus et renforce la cohésion d'équipe." },
           { text: "Ignorer le conflit pour éviter d'aggraver la situation.", feedback: "Ignorer le conflit peut laisser des tensions s'installer et compromettre la dynamique de groupe." },
-          { text: "Imposer une solution rapidement pour mettre fin au conflit.", feedback: "Imposer une solution peut résoudre temporairement le problème, sans traiter les causes profondes." }
+          { text: "Imposer une solution rapidement pour mettre fin au conflit.", feedback: "Imposer une solution peut résoudre le problème temporairement, mais risque de ne pas adresser les causes profondes." }
         ]
       },
       {
         question: "Vous constatez un biais inconscient lors d'une réunion. Que faites-vous ?",
         options: [
-          { text: "Soulever le biais de manière constructive en expliquant ses impacts.", feedback: "Aborder le sujet de façon constructive favorise la prise de conscience et améliore les processus décisionnels." },
-          { text: "Rester silencieux pour éviter toute confrontation.", feedback: "Le silence peut perpétuer le biais et empêcher une amélioration collective." },
-          { text: "Blâmer publiquement la personne concernée.", feedback: "Blâmer publiquement risque de créer un environnement hostile et de nuire à la collaboration." }
+          { text: "Soulever le biais de manière constructive en expliquant ses impacts.", feedback: "Aborder le sujet de façon constructive permet d'encourager la prise de conscience et d'améliorer les processus décisionnels." },
+          { text: "Rester silencieux pour éviter de créer des tensions.", feedback: "Le silence peut perpétuer le biais et empêcher une amélioration collective." },
+          { text: "Blâmer publiquement la personne concernée.", feedback: "Blâmer publiquement risque de créer un environnement hostile et nuire à la collaboration." }
         ]
       },
       {
@@ -353,7 +414,7 @@
       {
         question: "Lors de la planification d'un projet, comment intégrez-vous les principes EDI ?",
         options: [
-          { text: "Inclure des sessions de formation et de sensibilisation dans le planning.", feedback: "Excellente initiative ! Cela renforce la compréhension des principes EDI dès le démarrage du projet." },
+          { text: "Inclure des sessions de formation et de sensibilisation dans le planning.", feedback: "Excellente initiative ! Cela permet de renforcer la compréhension des principes EDI dès le démarrage du projet." },
           { text: "Ajouter une section EDI à la fin du projet.", feedback: "L'intégration tardive limite l'impact de l'EDI sur la dynamique globale du projet." },
           { text: "Supposer que les équipes connaissent déjà les principes EDI.", feedback: "Cette approche néglige la nécessité d'une sensibilisation continue et d'une adaptation des pratiques." }
         ]
@@ -361,19 +422,15 @@
     ];
     
     let currentScenario = 0;
-    
     function displayScenario() {
       const gameContent = document.getElementById('game-content');
       gameContent.innerHTML = "";
       if (currentScenario < scenarios.length) {
         const scenario = scenarios[currentScenario];
-        // Création et affichage de la question
         const questionElem = document.createElement('div');
         questionElem.className = 'game-question';
         questionElem.textContent = scenario.question;
         gameContent.appendChild(questionElem);
-        
-        // Création et affichage des options
         const optionsDiv = document.createElement('div');
         optionsDiv.className = 'game-options';
         scenario.options.forEach(option => {
@@ -392,12 +449,10 @@
       const gameContent = document.getElementById('game-content');
       const optionsDiv = gameContent.querySelector('.game-options');
       if (optionsDiv) optionsDiv.remove();
-      
       const feedbackElem = document.createElement('div');
       feedbackElem.className = 'game-feedback';
       feedbackElem.textContent = feedbackText;
       gameContent.appendChild(feedbackElem);
-      
       const nextBtn = document.createElement('button');
       nextBtn.className = 'next-button';
       nextBtn.textContent = currentScenario < scenarios.length - 1 ? 'Suivant' : 'Terminer';
@@ -409,20 +464,6 @@
     }
     
     window.addEventListener('DOMContentLoaded', displayScenario);
-
-    // Fonctionnalités du menu latéral
-    const hamburger = document.getElementById('hamburger');
-    const sideMenu = document.getElementById('side-menu');
-    hamburger.addEventListener('click', () => {
-      sideMenu.classList.toggle('closed');
-    });
-
-    // Activation du mode sombre
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    darkModeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Mode Clair' : 'Mode Sombre';
-    });
   </script>
 </body>
 </html>
