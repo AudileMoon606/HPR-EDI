@@ -353,14 +353,6 @@
     const sideMenu = document.getElementById('side-menu');
     const darkToggleBtn = document.getElementById('dark-toggle-btn');
     
-    // Affichage de la section sauvegardée ou la section "accueil" par défaut
-    const savedSection = localStorage.getItem('activeSection');
-    if (savedSection) {
-      sections.forEach(section => section.classList.remove('active'));
-      document.getElementById(savedSection).classList.add('active');
-    } else {
-      document.getElementById('accueil').classList.add('active');
-    }
     
     // Mise à jour de la section active lors d'un clic sur un lien du menu
     menuLinks.forEach(link => {
@@ -369,8 +361,6 @@
         const targetId = this.getAttribute('data-target');
         sections.forEach(section => section.classList.remove('active'));
         document.getElementById(targetId).classList.add('active');
-        // Sauvegarde de la section active dans le localStorage
-        localStorage.setItem('activeSection', targetId);
         sideMenu.classList.remove('active');
       });
     });
@@ -381,16 +371,7 @@
       sideMenu.classList.toggle('active');
     });
     
-    // Gestion du mode sombre avec sauvegarde de l'état dans localStorage
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
-    }
-    
-    darkToggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    });
-    
+
     // Jeu interactif "Chef de Projet Inclusif" avec vidéos et questions
     const scenarios = [
       {
